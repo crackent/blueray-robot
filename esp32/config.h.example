@@ -1,0 +1,3 @@
+// Renombrar este archivo a config.h y completar con tus datos
+const char* ssid = "TU_NOMBRE_DE_RED";
+const char* password = "TU_CONTRASEÑA";

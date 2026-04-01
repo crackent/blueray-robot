@@ -1,0 +1,10 @@
+# Config files with credentials
+**/config.h
+
+# Arduino/PlatformIO
+.pio/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
