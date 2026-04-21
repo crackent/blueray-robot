@@ -3,16 +3,16 @@
 
 #define TCP_PORT 1001
 #define TCP_TIMEOUT 5000
-#define VELOCIDAD_DEFAULT 200
+#define VELOCIDAD_DEFAULT 220
 #define PWM_FREQ 1000
 #define PWM_RES 8
 
 // Puente H 1 - Motores Delanteros
-#define H1_IN1 19
-#define H1_IN2 18
+#define H1_IN1 18
+#define H1_IN2 19
 #define H1_ENA 5
-#define H1_IN3 4
-#define H1_IN4 2
+#define H1_IN3 2
+#define H1_IN4 4
 #define H1_ENB 15
 
 // Puente H 2 - Motores Traseros
@@ -169,17 +169,17 @@ void girarIzquierda(int velocidad) {
 }
 
 void lateralDerecha(int velocidad) {
-    setMotor(H1_IN1, H1_IN2, H1_ENA, -velocidad);
-    setMotor(H1_IN3, H1_IN4, H1_ENB, velocidad);
-    setMotor(H2_IN1, H2_IN2, H2_ENA, velocidad);
-    setMotor(H2_IN3, H2_IN4, H2_ENB, -velocidad);
-}
-
-void lateralIzquierda(int velocidad) {
     setMotor(H1_IN1, H1_IN2, H1_ENA, velocidad);
     setMotor(H1_IN3, H1_IN4, H1_ENB, -velocidad);
     setMotor(H2_IN1, H2_IN2, H2_ENA, -velocidad);
     setMotor(H2_IN3, H2_IN4, H2_ENB, velocidad);
+}
+
+void lateralIzquierda(int velocidad) {
+    setMotor(H1_IN1, H1_IN2, H1_ENA, -velocidad);
+    setMotor(H1_IN3, H1_IN4, H1_ENB, velocidad);
+    setMotor(H2_IN1, H2_IN2, H2_ENA, velocidad);
+    setMotor(H2_IN3, H2_IN4, H2_ENB, -velocidad);
 }
 
 void detener() {
