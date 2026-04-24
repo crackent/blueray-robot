@@ -24,12 +24,12 @@ Programa para Arduino Uno que controla un LED respondiendo a comandos recibidos 
 
 ### 4.1 Puerto Serie Hardware
 - **Pines**: 0 (RX) y 1 (TX)
-- **Velocidad**: 9600 bps
+- **Velocidad**: 115200 bps
 - **Uso**: Conexión por USB, depuración o dispositivo externo
 
 ### 4.2 Puerto Serie Software
 - **Pines**: 2 (RX) y 3 (TX)
-- **Velocidad**: 9600 bps
+- **Velocidad**: 115200 bps
 - **Biblioteca**: `SoftwareSerial`
 - **Uso**: Comunicación con ESP32
 
@@ -73,7 +73,7 @@ Procesa un carácter recibido de cualquier puerto serie.
 ```
 
 ### 7.2 Velocidad de Baudios
-- Ambos puertos a 9600 bps
+- Ambos puertos a 115200 bps
 
 ### 7.3 Robustez
 - Ignorar caracteres no válidos sin errores
@@ -138,7 +138,7 @@ Enviar 'a' → LED se apaga
 
 ```cpp
 #define LED_PIN 13
-#define BAUD_RATE 9600
+#define BAUD_RATE 115200
 #define SERIAL1_RX 2
 #define SERIAL1_TX 3
 ```

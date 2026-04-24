@@ -1,5 +1,5 @@
 #define LED_PIN 13
-#define BAUD_RATE 9600
+#define BAUD_RATE 115200
 #define SERIAL1_RX 2
 #define SERIAL1_TX 3
 
