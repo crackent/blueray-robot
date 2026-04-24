@@ -3,7 +3,7 @@
 
 #define RX_PIN 5
 #define TX_PIN 6
-#define BAUD_RATE 9600
+#define BAUD_RATE 115200
 #define TCP_PORT 1001
 #define TCP_TIMEOUT 5000
 

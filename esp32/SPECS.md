@@ -28,14 +28,13 @@ Programa para ESP32 C3 SuperMini que actúa como puente entre una conexión TCP/
 ### 4.2 Configuración WiFi
 - Modo: Station (conexión a punto de acceso existente)
 - Requiere SSID y contraseña de la red WiFi
-- SSID: FIBRA_TVT_LU46
-- Password: u9kab83u
+- SSID y contraseña configurables (ver config.h.example)
 
 ## 5. Comunicación Serie
 
 ### 5.1 Puerto Serie Software
 - **Pines utilizados**: 5 (RX) y 6 (TX)
-- **Velocidad de transmisión (baud rate)**: 9600 bps
+- **Velocidad de transmisión (baud rate)**: 115200 bps
 - **Destino**: Arduino Uno (pines 2 y 3)
 
 ### 5.2 Puerto Serie Hardware
@@ -67,7 +66,7 @@ Cliente TCP/IP → Puerto 1001 (ESP32) → Puerto Serie Software (ESP32) → Ard
 
 ### 7.1 Inicialización (`setup()`)
 - Inicializar puerto serie hardware a 115200 baudios
-- Inicializar puerto serie software en pines 5 (RX) y 6 (TX) a 9600 baudios
+- Inicializar puerto serie hardware 1 en pines 5 (RX) y 6 (TX) a 115200 baudios
 - Conectar a red WiFi (usar credenciales predefinidas)
 - Esperar conexión WiFi exitosa
 - Iniciar servidor TCP en puerto 1001
@@ -92,8 +91,8 @@ Cliente TCP/IP → Puerto 1001 (ESP32) → Puerto Serie Software (ESP32) → Ard
 ```
 
 ### 8.2 Velocidad de Baudios
-- Puerto serie software: 9600 bps (compatible con Arduino)
-- Puerto serie hardware: 115200 bps (depuración)
+- Puerto serie hardware 1: 115200 bps (comunicación con Arduino)
+- Puerto serie hardware 0: 115200 bps (depuración por USB)
 
 ### 8.3 Puerto TCP
 - Puerto: 1001 (configurable)
@@ -115,7 +114,7 @@ Inicio
   ↓
 Configurar puerto serie hardware (115200 baudios)
   ↓
-Configurar puerto serie software pines 5/6 (9600 baudios)
+Configurar puerto serie hardware 1 pines 5/6 (115200 baudios)
   ↓
 Conectar a WiFi
   ↓
@@ -177,10 +176,10 @@ const char* password = "CONTRASEÑA";
 // TCP Server
 const int tcpPort = 1001;
 
-// Serial Software
+// Serial Hardware 1
 const int rxPin = 5;
 const int txPin = 6;
-const int baudRate = 9600;
+const int baudRate = 115200;
 ```
 
 ## 12. Ejemplo de Uso
@@ -230,8 +229,8 @@ s.close()
 - Para producción, considerar añadir autenticación básica
 
 ### 14.3 Compatibilidad
-- Puerto serie software compatible con Arduino Uno
-- El ESP32 C3 tiene UART hardware adicional, pero se usa SoftwareSerial para compatibilidad de pines
+- Puerto serie hardware (HardwareSerial 1) compatible con Arduino Uno
+- El ESP32 C3 usa HardwareSerial(1) en pines GPIO 5/6
 
 ## 15. Mensajes de Estado por Monitor Serie
 
