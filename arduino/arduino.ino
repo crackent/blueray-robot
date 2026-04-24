@@ -1,27 +1,31 @@
-#include <SoftwareSerial.h>
-
 #define LED_PIN 13
-#define RX_PIN 2
-#define TX_PIN 3
 #define BAUD_RATE 9600
+#define SERIAL1_RX 2
+#define SERIAL1_TX 3
 
-SoftwareSerial mySerial(RX_PIN, TX_PIN);
+#include <SoftwareSerial.h>
+SoftwareSerial serialESP(SERIAL1_RX, SERIAL1_TX);
+
+void procesar_comando(char comando) {
+    if (comando == 'e') {
+        digitalWrite(LED_PIN, HIGH);
+    } else if (comando == 'a') {
+        digitalWrite(LED_PIN, LOW);
+    }
+}
 
 void setup() {
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
-    
-    mySerial.begin(BAUD_RATE);
+    Serial.begin(BAUD_RATE);
+    serialESP.begin(BAUD_RATE);
 }
 
 void loop() {
-    if (mySerial.available()) {
-        char comando = mySerial.read();
-        
-        if (comando == 'e') {
-            digitalWrite(LED_PIN, HIGH);
-        } else if (comando == 'a') {
-            digitalWrite(LED_PIN, LOW);
-        }
+    if (Serial.available()) {
+        procesar_comando(Serial.read());
+    }
+    if (serialESP.available()) {
+        procesar_comando(serialESP.read());
     }
 }

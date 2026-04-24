@@ -1,64 +1,69 @@
-# Especificaciones del Programa Arduino - Control de LED por Puerto Serie Software
+# Especificaciones del Programa Arduino - Control de LED por Dos Puertos Serie
 
 ## 1. Descripción General
-Programa para Arduino Uno que permite controlar un LED mediante comandos enviados por un puerto serie simulado en los pines digitales 2 y 3.
+Programa para Arduino Uno que controla un LED respondiendo a comandos recibidos por dos puertos serie: el hardware (pines 0/1) y un SoftwareSerial (pines 2/3) conectado a una ESP32.
 
 ## 2. Hardware Requerido
 - Arduino Uno
 - LED conectado al pin digital 13
-- Dispositivo externo capaz de enviar datos serie conectado a:
-  - Pin digital 2 (RX - recepción)
-  - Pin digital 3 (TX - transmisión)
+- Dispositivos serie conectados a:
+  - Puerto serie hardware: pines 0 (RX) y 1 (TX)
+  - Puerto serie software: pines 2 (RX) y 3 (TX)
 
 ## 3. Configuración de Pines
 
 | Pin | Función | Descripción |
 |-----|---------|-------------|
-| 2   | RX      | Recepción de datos del puerto serie software |
-| 3   | TX      | Transmisión de datos del puerto serie software |
+| 0   | RX      | Recepción serie hardware |
+| 1   | TX      | Transmisión serie hardware |
+| 2   | RX      | Recepción serie software (ESP32) |
+| 3   | TX      | Transmisión serie software (ESP32) |
 | 13  | OUTPUT  | LED integrado de Arduino |
 
 ## 4. Comunicación Serie
 
-### 4.1 Puerto Serie Software
-- **Pines utilizados**: 2 (RX) y 3 (TX)
-- **Velocidad de transmisión (baud rate)**: 9600 bps
-- **Biblioteca requerida**: `SoftwareSerial`
-
-### 4.2 Puerto Serie Hardware (opcional)
+### 4.1 Puerto Serie Hardware
+- **Pines**: 0 (RX) y 1 (TX)
 - **Velocidad**: 9600 bps
-- **Uso**: Depuración y monitoreo
+- **Uso**: Conexión por USB, depuración o dispositivo externo
+
+### 4.2 Puerto Serie Software
+- **Pines**: 2 (RX) y 3 (TX)
+- **Velocidad**: 9600 bps
+- **Biblioteca**: `SoftwareSerial`
+- **Uso**: Comunicación con ESP32
 
 ## 5. Protocolo de Comandos
 
-### 5.1 Comandos Disponibles
+Ambos puertos serie responden al mismo protocolo:
 
 | Comando | Letra | Acción |
 |---------|-------|--------|
 | Encender | `e` | Enciende el LED en el pin 13 (HIGH) |
 | Apagar | `a` | Apaga el LED en el pin 13 (LOW) |
 
-### 5.2 Comportamiento
-1. El programa espera continuamente datos del puerto serie software
-2. Cuando recibe un carácter:
-   - Si es `'e'` → `digitalWrite(13, HIGH)`
-   - Si es `'a'` → `digitalWrite(13, LOW)`
-   - Cualquier otro carácter → se ignora (sin acción)
+### 5.1 Comportamiento
+1. El programa escucha ambos puertos serie simultáneamente
+2. Al recibir un carácter válido por cualquiera de los dos puertos, ejecuta la acción correspondiente
+3. Caracteres no reconocidos se ignoran
 
 ## 6. Estructura del Programa
 
 ### 6.1 Inicialización (`setup()`)
-- Configurar pin 13 como OUTPUT
-- Inicializar LED en estado LOW (apagado)
-- Inicializar puerto serie software a 9600 baudios
-- (Opcional) Inicializar puerto serie hardware para depuración
+- Configurar pin 13 como OUTPUT, estado LOW (apagado)
+- Iniciar puerto serie hardware a 9600 baudios
+- Iniciar puerto serie software en pines 2/3 a 9600 baudios
 
 ### 6.2 Bucle Principal (`loop()`)
-- Verificar si hay datos disponibles en el puerto serie software
-- Si hay datos:
-  - Leer el carácter recibido
-  - Comparar con comandos válidos
-  - Ejecutar acción correspondiente
+- Verificar datos en puerto serie hardware → procesar si hay
+- Verificar datos en puerto serie software → procesar si hay
+- Repetir
+
+### 6.3 Función Auxiliar
+```cpp
+void procesar_comando(char comando);
+```
+Procesa un carácter recibido de cualquier puerto serie.
 
 ## 7. Consideraciones Técnicas
 
@@ -68,51 +73,72 @@ Programa para Arduino Uno que permite controlar un LED mediante comandos enviado
 ```
 
 ### 7.2 Velocidad de Baudios
-- 9600 bps (estándar, compatible con la mayoría de dispositivos)
+- Ambos puertos a 9600 bps
 
-### 7.3 Tiempo de Respuesta
-- El LED debe responder inmediatamente al recibir el comando
-- No se requieren delays ni tiempos de espera
-
-### 7.4 Robustez
-- El programa debe ignorar caracteres no válidos sin causar errores
-- El programa debe funcionar de forma continua sin reinicios
+### 7.3 Robustez
+- Ignorar caracteres no válidos sin errores
+- Funcionamiento continuo sin reinicios
+- Sin delays ni bloqueos
 
 ## 8. Diagrama de Flujo
 
 ```
 Inicio
   ↓
-Configurar pin 13 como OUTPUT
+Configurar pin 13 como OUTPUT (LOW)
   ↓
-Inicializar puerto serie software (9600 baudios)
+Iniciar Serial (9600 baudios)
   ↓
-LED apagado (LOW)
+Iniciar SoftwareSerial pines 2/3 (9600 baudios)
   ↓
-┌─────────────────────────────────┐
-│  ¿Hay datos disponibles?        │
-│         ↓ SÍ                    │
-│  Leer carácter                  │
-│         ↓                       │
-│  ¿Es 'e'? ──SÍ──→ Encender LED  │
-│         ↓ NO                    │
-│  ¿Es 'a'? ──SÍ──→ Apagar LED    │
-│         ↓ NO                    │
-│  Ignorar carácter               │
-└─────────────────────────────────┘
-         ↓
-    (Repetir bucle)
+┌──────────────────────────────────────┐
+│  ¿Datos en Serial? ──SÍ──→ Procesar │
+│  ¿Datos en SoftSerial? ──SÍ──→ Procesar │
+└──────────────────────────────────────┘
+  ↓
+(Repetir bucle)
 ```
 
-## 9. Ejemplo de Uso
+## 9. Diagrama de Conexión
 
-1. Conectar dispositivo serie externo a pines 2 (RX) y 3 (TX)
-2. Cargar el programa en Arduino Uno
-3. Enviar letra `e` → LED se enciende
-4. Enviar letra `a` → LED se apaga
+```
+┌─────────────────────┐         ┌─────────────────────┐
+│      PC / USB       │         │      ESP32          │
+│                     │         │                     │
+│   TX ──────────────────── RX0 │                     │
+│   RX ←────────────────── TX0 │      TX3 ──────────────── RX2
+│                     │         │      RX2 ←─────────────── TX3
+└─────────────────────┘         └─────────────────────┘
+                                          │
+                                     WiFi TCP 1001
+                                          │
+                                    Cliente TCP
+                                         (PC)
+         │                                     │
+         └────────── Arduino Uno ──────────────┘
+                    Pin 13 ── LED
+```
 
-## 10. Notas Adicionales
+## 10. Ejemplo de Uso
 
-- El pin 13 tiene un LED integrado en la placa Arduino Uno, no requiere componentes externos adicionales
-- Asegurar conexión a tierra (GND) común entre Arduino y el dispositivo externo
-- Los pines 0 y 1 se dejan libres para el puerto serie hardware (USB)
+### 10.1 Por USB (serie hardware)
+```
+Enviar 'e' → LED se enciende
+Enviar 'a' → LED se apaga
+```
+
+### 10.2 Por ESP32 (serie software)
+```
+Conectar por TCP a ESP32:1001
+Enviar 'e' → LED se enciende
+Enviar 'a' → LED se apaga
+```
+
+## 11. Parámetros Configurables
+
+```cpp
+#define LED_PIN 13
+#define BAUD_RATE 9600
+#define SERIAL1_RX 2
+#define SERIAL1_TX 3
+```
